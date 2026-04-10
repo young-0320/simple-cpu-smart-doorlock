@@ -1,0 +1,26 @@
+# Vivado 로그
+*.jou
+*.log
+*.str
+
+# Vivado 생성 파일
+.Xil/
+*.xpr.bak
+
+# 합성/구현 결과 
+**/build/
+
+# 체크포인트 
+*.dcp
+
+# 시뮬레이션 파일
+*.wdb
+*.vcd
+
+# Python
+__pycache__/
+*.pyc
+
+# OS 파일
+.DS_Store
+Thumbs.db
