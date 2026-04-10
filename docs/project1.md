@@ -8,7 +8,7 @@
 
 GitHub Repository URL: https://github.com/young-0320/simple-cpu-smart-doorlock
 
-2조: 유경민3(010 9573 5335), 이윤서4(010-3052-1339), 한영웅4, 허원석4
+2조: 유경민, 이윤서, 한영웅, 허원석
 
 ---
 
