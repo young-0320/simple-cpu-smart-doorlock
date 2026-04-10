@@ -2,8 +2,7 @@
 
 # Git 설치
 
-아래의 URL 참고
-https://velog.io/@young-0320/개발-환경-설정-3-Git-설치Windows
+해당 URL 참고: https://velog.io/@young-0320/개발-환경-설정-3-Git-설치Windows
 
 # Git 사용법
 

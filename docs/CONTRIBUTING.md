@@ -1,12 +1,13 @@
 # 협업 규착
 
 ## 1. 폴더 구조
+```
 root/
 ├── docs/         ← spec, 설계 문서, 회의록 등
 ├── rtl/          ← Verilog 소스 파일 (.v)
 ├── sim/          ← Testbench 파일 (.v)
 └── constrs/      ← Zybo Z7 보드 제약 파일 (.xdc)
-
+```
 ## 2. 파일 네이밍 규칙
 1. 모든 파일명은 소문자 + 언더스코어 방식으로 작성한다.
 2. 파일 이름과 모듈 이름은 일치시킨다 (예: `full_adder.v` → `module full_adder`).
