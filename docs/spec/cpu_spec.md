@@ -203,15 +203,6 @@ operand [27:4] : unused
 | 1110   | (예약) | -    | NOP처럼 처리, PC+1                          |
 | 1111   | (예약) | -    | NOP처럼 처리, PC+1                          |
 
-### Decoder 타입 판단
-
-```
-상위 2비트만으로 타입 판단
-00xx → M타입 (BRAM 주소)
-01xx → I타입 (즉시값)
-10xx → J타입 (점프 주소)
-11xx → P/N타입 (포트 번호 또는 NOP)
-```
 
 ---
 
@@ -345,7 +336,7 @@ ZERO FLAG  : 변경 없음
 
 ```
 형식  : OUT port
-동작  : out_port[port] <- ACC
+동작  : out_port[port] <- ACC[3:0]
         PC <- PC + 1
 ZERO FLAG  : 변경 없음
 비트  : operand[3:0] = port 번호, [27:4] unused
