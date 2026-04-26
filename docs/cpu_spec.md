@@ -60,14 +60,14 @@ nope
 
 ### 포맷 
 
-| Type | 명령어                     | operand          |
-| ---- | -------------------------- | ---------------- |
-| M    | LOAD, STORE, ADD, SUB, CMP | [27:0] BRAM 주소 |
-| I    | LOADI, ADDI, CMPI          | [27:0] 즉시값    |
-| J    | JMP, JZ, JNZ               | [27:0] 점프 주소 |
-| P    | IN, OUT                    | [3:0] 포트 번호  |
-| N    | NOP                        | 아무동작 없음, PC만 증가|
-| -    | (예약)                        | 확장용 |
+| Type | 명령어                     | operand                  |
+| ---- | -------------------------- | ------------------------ |
+| M    | LOAD, STORE, ADD, SUB, CMP | [27:0] BRAM 주소         |
+| I    | LOADI, ADDI, CMPI          | [27:0] 즉시값            |
+| J    | JMP, JZ, JNZ               | [27:0] 점프 주소         |
+| P    | IN, OUT                    | [3:0] 포트 번호          |
+| N    | NOP                        | 아무동작 없음, PC만 증가 |
+| -    | (예약)                     | 확장용                   |
 
 
 
@@ -79,13 +79,13 @@ P: 10
 N: 11
 
 
-| opcode | 니모닉 | Type | 동작 |
-|--------|--------|------|------|
-| 0000   | LOAD   | M    | BRAM[addr] → ACC |
-| 0001   | STORE  | M    | ACC → BRAM[addr] |
+| opcode | 니모닉 | Type | 동작                                  |
+| ------ | ------ | ---- | ------------------------------------- |
+| 0000   | LOAD   | M    | BRAM[addr] → ACC                      |
+| 0001   | STORE  | M    | ACC → BRAM[addr]                      |
 | 0010   | ADD    | M    | ACC + BRAM[addr] → ACC, FLAG 업데이트 |
 | 0011   | SUB    | M    | ACC - BRAM[addr] → ACC, FLAG 업데이트 |
-| 0100   | CMP    | M    | ACC - BRAM[addr], FLAG만 업데이트 |
+| 0100   | CMP    | M    | ACC - BRAM[addr], FLAG만 업데이트     |
 
 | 0101   | LOADI  | I    | immediate → ACC |
 | 0110   | ADDI   | I    | ACC + immediate → ACC, FLAG 업데이트 |
@@ -95,9 +95,9 @@ N: 11
 | 1001   | JZ     | J    | Z=1이면 PC ← addr |
 | 1010   | JNZ    | J    | Z=0이면 PC ← addr |
 
-| 1111   | IN     | P    | 외부입력[port] → ACC |
+| 1101   | IN     | P    | 외부입력[port] → ACC |
 | 1100   | OUT    | P    | ACC → 외부출력[port] |
 
-| 1101   | NOP    | N    | 아무동작 없음, PC만 증가 |
+| 1011   | NOP    | N    | 아무동작 없음, PC만 증가 |
 | 1110   | (예약) | -    | 확장용 |
 | 1111   | (예약) | -    | 확장용 |
