@@ -62,8 +62,49 @@ Operand / Address / Immediate field : 28 bit
 | 1110   | (예약) | -    | 확장용                                |
 | 1111   | (예약) | -    | 확장용                                |
 
-
 ## cpu 입출력 포트
-| 포트 번호 | 용도           | 설명                                 |
-입력: clk, bram_data, in_port, reset
-출력: bram_addr, bram_data_out, out_port, write_en, lock, unlock
+
+입력
+
+- clk
+- reset
+- bram_rdata  [31:0]
+- in_port     [4:0]
+  - in_port [0] -> 입력 버튼 (0: 미입력, 1: 입력)
+  - in_port [1] -> 확정 버튼 (0: 미확정, 1: 확정)
+  - in_port [2] -> 취소 버튼 (0: 미취소, 1: 취소)
+  - in_port [3] -> 비밀번호 변경 신호 (0: 미변경, 1: 변경)
+  - in_port [4] -> 마스터키 입력 신호 (0: 미입력, 1: 입력)
+
+출력
+
+- bram_addr   [11:0]
+- bram_wdata  [31:0]
+- bram_we
+- out_port    [3:0]
+  - out_port[0] → 도어 상태  (0: 닫힘, 1: 열림)
+  - out_port[1] → 1회 실패  (0: 정상, 1: 1회 실패)
+  - out_port[2] → 2회 실패  (0: 정상, 1: 2회 실패)
+  - out_port[3] → 3회 실패  (0: 정상, 1: 3회 실패 + 타이머)
+
+3회 실패 : out_port = 1000  → [3]만 1
+2회 실패 : out_port = 0100  → [2]만 1
+1회 실패 : out_port = 0010  → [1]만 1
+열림     : out_port = 0001  → [0]만 1
+
+## cpu 레지스터
+
+```
+PC        : 명령어 주소
+IR        : 현재 명령어 (32비트)
+ACC       : 연산 레지스터 (32비트)
+ZERO_FLAG : Z만 사용, N 없음
+state R   : FETCH/DECODE/EXECUTE/INCREMENT
+```
+
+**IN/OUT**
+
+```
+operand [3:0] : port 번호 (4비트)
+operand [27:4] : unused
+```
