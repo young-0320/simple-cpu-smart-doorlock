@@ -1,4 +1,6 @@
-# 스마트 도어락 설계 워크플로우 초안
+# 스마트 도어락 설계 워크플로우 v1
+
+작업일 : 2026 04 26
 
 ## 1. 작업 순서
 
@@ -24,6 +26,7 @@
 8. 시연 영상 촬영 및 발표 자료 작성
 
 ## 2. 구현 모듈 리스트
+
 ```
 1. top_cpu.v
 2. top_doorlock.v
@@ -31,7 +34,7 @@
 4. alu.v
 5. accumulator.v
 6. decoder.v
-7. fsm.v              
+7. fsm.v          
 8. inst_reg.v         ← Instruction Register
 9. bram               ← Vivado IP로 생성
 10. input_handler.v   ← PMOD, BCD 등 입력 처리 모듈
@@ -41,6 +44,7 @@
 14. assembler.py      ← doorlock.asm 코드를 기계어로 변환하는 스크립트
 15. doorlock.coe      ← Coefficient File로 BRAM 초기화시키는 파일 (assembler.py 출력물)  
 ```
+
 ## 3. 계층 구조
 
 ```
@@ -60,13 +64,14 @@ top_doorlock.v
 ## 4. 업무 분할
 
 모두 함께
+
 - 스마트 도어락 기능 확정
 - ISA 설계 (명령어 종류, 비트 구조)
 - define.vh 작성(프로젝트 상수 값 정의 파일)
 - 모듈 포트(인터페이스) 스펙 확정
 
+## 역할분담
 
-### 1안 
 A : PC + FSM + Decoder + IR
     - PC 레지스터
     - 4-cycle 상태 전이 구현
@@ -87,7 +92,7 @@ C : BRAM 인터페이스 + 어셈블리
 
 D : 입출력 + Top-level
 
-    - 입력 처리 (PMOD / BCD) 
+    - 입력 처리 (PMOD / BCD)
     - LED / 잠금 출력
     - top 모듈 통합
 특징
@@ -104,35 +109,3 @@ D : Top-level 담당자가 입출력도 맡아서
     → 통합 시 혼란 적음
 
 -> 모듈 경계가 뚜렷하지만 C의 작업량이 상대적으로 많고, A의 구현 난이도가 높음
-
-### 2안 
-A : PC + IR + FSM
-    - PC 레지스터
-    - Instruction Register
-    - 4-cycle 상태 전이
-
-B : Decoder + define.vh
-    - ISA 기반 제어 신호 생성
-    - define.vh 관리 (공용 파일 담당)
-
-C : ALU + Accumulator + BRAM
-    - 연산 모듈
-    - BRAM 인터페이스
-    - 메모리 맵 정의
-
-D : 입출력 + Top-level + 어셈블리
-    - PMOD / BCD 입력 처리
-    - LED / 잠금 출력
-    - top 모듈 통합
-    - 어셈블리 프로그램 작성 (doorlock.asm)
-    - 기계어 변환 스크립트 (assembler.py)
-    - .coe 파일 생성
-특징
-A ↔ B : FSM이 Decoder 제어 신호를 받으므로 인터페이스가 많음
-        → 둘이 가장 긴밀하게 소통해야 함
-
-C     : 연산 + 메모리로 독립성이 높아 혼자 작업하기 좋음
-
-D     : Top-level은 전체를 이해해야 하지만
-        어셈블리는 ISA 확정 후 독립적으로 작업 가능
-        → 두 작업이 시간적으로 분리되어 부담이 덜함
