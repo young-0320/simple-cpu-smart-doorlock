@@ -1,4 +1,5 @@
 # 디지털회로설계및언어 프로젝트1
+
 ## simple cpu smart doorlock
 
 📅 **마감 기한 5월 1일 10:30**
@@ -17,7 +18,7 @@ GitHub Repository URL: https://github.com/young-0320/simple-cpu-smart-doorlock
 강의자료의 simple cpu를 기본 구조는 그대로 두고 ALU 수정은 가능한 형태로 구성한 상태 (4 cycle per operation)에서
 스마트도어락 시스템을 FPGA로 구현하기. PMOD와 빵판과 선 활용 (BCD 코드 입력 등등)
 하나의 BRAM을 main memory (data 및 instruction) 로 활용해야 함.
-instruction을 BRAM에 다 넣은 상태에서 초기화를 한번 한 상태를 가정.  발표 때 직접 동작을 보여주어야 함. 
+instruction을 BRAM에 다 넣은 상태에서 초기화를 한번 한 상태를 가정.  발표 때 직접 동작을 보여주어야 함.
 발표시간은 30분 (시연 포함, 특징, 구조, instruction 어떻게 만들었는지 설명)
 5월 1일 영상과 발표자료 올리고 5월 15일 발표 (질의응답 준비).
 
@@ -33,10 +34,19 @@ ALU 수정은 가능한 형태로 구성(ALU 기능 추가 가능)
 
 instruction을 BRAM에 다 넣은 상태에서 초기화를 한번 했다고 가정
 
----
+## 역할분담
 
-역할 분담
-유경민:
-이윤서:
-한영웅:
-허원석:
+한영웅 허원석 : CPU 설계
+
+유경민 : BRAM 인터페이스 + 어셈블리
+    - BRAM 단일 포트 설계
+    - 메모리 맵 정의
+    - 어셈블리 프로그램 작성
+    - 기계어 변환 스크립트 (Python)
+    - .coe 파일 생성
+
+이윤서 : 입출력 + Top-level
+
+    - 입력 처리 (PMOD / BCD)
+    - LED / 잠금 출력
+    - top 모듈 통합

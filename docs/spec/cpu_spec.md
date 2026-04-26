@@ -61,3 +61,9 @@ Operand / Address / Immediate field : 28 bit
 | 1011   | NOP    | N    | 아무동작 없음, PC만 증가              |
 | 1110   | (예약) | -    | 확장용                                |
 | 1111   | (예약) | -    | 확장용                                |
+
+
+## cpu 입출력 포트
+| 포트 번호 | 용도           | 설명                                 |
+입력: clk, bram_data, in_port, reset
+출력: bram_addr, bram_data_out, out_port, write_en, lock, unlock
