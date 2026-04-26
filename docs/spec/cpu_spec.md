@@ -223,7 +223,7 @@ operand [27:4] : unused
 형식  : LOAD addr
 동작  : ACC <- BRAM[addr]
         PC  <- PC + 1
-FLAG  : 변경 없음
+ZERO FLAG  : 변경 없음
 예시  : LOAD 0xF00 → ACC <- BRAM[0xF00]
 ```
 
@@ -233,7 +233,7 @@ FLAG  : 변경 없음
 형식  : STORE addr
 동작  : BRAM[addr] <- ACC
         PC <- PC + 1
-FLAG  : 변경 없음
+ZERO FLAG  : 변경 없음
 예시  : STORE 0xF00 → BRAM[0xF00] <- ACC
 ```
 
@@ -244,7 +244,7 @@ FLAG  : 변경 없음
 동작  : ACC <- ACC + BRAM[addr]
         ZERO_FLAG <- (결과 == 0) ? 1 : 0
         PC <- PC + 1
-FLAG  : 업데이트
+ZERO FLAG  : 업데이트
 예시  : ADD 0xF50 → ACC <- ACC + BRAM[0xF50]
 ```
 
@@ -255,7 +255,7 @@ FLAG  : 업데이트
 동작  : ACC <- ACC - BRAM[addr]
         ZERO_FLAG <- (결과 == 0) ? 1 : 0
         PC <- PC + 1
-FLAG  : 업데이트
+ZERO FLAG  : 업데이트
 예시  : LOAD INPUT_LEN / SUB CONST_1 / STORE INPUT_LEN
 ```
 
@@ -266,7 +266,7 @@ FLAG  : 업데이트
 동작  : ZERO_FLAG <- (ACC == BRAM[addr]) ? 1 : 0
         ACC 변경 없음
         PC <- PC + 1
-FLAG  : 업데이트
+ZERO FLAG  : 업데이트
 예시  : CMP 0xF00 / JZ MATCH
 ```
 
@@ -276,7 +276,7 @@ FLAG  : 업데이트
 형식  : LOADI immediate
 동작  : ACC <- immediate (28비트 즉시값)
         PC  <- PC + 1
-FLAG  : 변경 없음
+ZERO FLAG  : 변경 없음
 예시  : LOADI 4 → ACC <- 4
 ```
 
@@ -287,7 +287,7 @@ FLAG  : 변경 없음
 동작  : ACC <- ACC + immediate
         ZERO_FLAG <- (결과 == 0) ? 1 : 0
         PC <- PC + 1
-FLAG  : 업데이트
+ZERO FLAG  : 업데이트
 예시  : LOAD FAIL_COUNT / ADDI 1 / STORE FAIL_COUNT
 ```
 
@@ -298,7 +298,7 @@ FLAG  : 업데이트
 동작  : ZERO_FLAG <- (ACC == immediate) ? 1 : 0
         ACC 변경 없음
         PC <- PC + 1
-FLAG  : 업데이트
+ZERO FLAG  : 업데이트
 예시  : IN 4 / CMPI 1 / JZ INPUT_RECEIVED
 ```
 
@@ -307,7 +307,7 @@ FLAG  : 업데이트
 ```
 형식  : JMP addr
 동작  : PC <- addr
-FLAG  : 변경 없음
+ZERO FLAG : 변경 없음
 예시  : JMP 0x100 → PC <- 0x100
 ```
 
@@ -317,7 +317,7 @@ FLAG  : 변경 없음
 형식  : JZ addr
 동작  : ZERO_FLAG == 1 이면 PC <- addr
         ZERO_FLAG == 0 이면 PC <- PC + 1
-FLAG  : 변경 없음
+ZERO FLAG  : 변경 없음
 예시  : CMP 0xF00 / JZ MATCH
 ```
 
@@ -327,7 +327,7 @@ FLAG  : 변경 없음
 형식  : JNZ addr
 동작  : ZERO_FLAG == 0 이면 PC <- addr
         ZERO_FLAG == 1 이면 PC <- PC + 1
-FLAG  : 변경 없음
+ZERO FLAG  : 변경 없음
 예시  : CMP 0xF00 / JNZ FAIL
 ```
 
@@ -337,7 +337,7 @@ FLAG  : 변경 없음
 형식  : NOP
 동작  : 아무동작 없음
         PC <- PC + 1
-FLAG  : 변경 없음
+ZERO FLAG  : 변경 없음
 용도  : 빈 자리 채우기, 예약 공간 처리
 ```
 
@@ -347,7 +347,7 @@ FLAG  : 변경 없음
 형식  : OUT port
 동작  : out_port[port] <- ACC
         PC <- PC + 1
-FLAG  : 변경 없음
+ZERO FLAG  : 변경 없음
 비트  : operand[3:0] = port 번호, [27:4] unused
 예시  : LOADI 1 / OUT 0 → out_port[0] = 1 (도어 열림)
         LOADI 0 / OUT 0 → out_port[0] = 0 (도어 닫힘)
@@ -360,7 +360,7 @@ FLAG  : 변경 없음
 형식  : IN port
 동작  : ACC <- in_port[port]
         PC  <- PC + 1
-FLAG  : 변경 없음
+ZERO FLAG  : 변경 없음
 비트  : operand[3:0] = port 번호, [27:4] unused
 
 논리적 포트 번호 매핑:
