@@ -3,56 +3,53 @@
 ## 1. 제작 모듈 목록
 
 1. `top_cpu.v`
+
    - CPU 전체 모듈
    - PC, IR, Decoder, FSM, ALU, ACC, ZERO_FLAG 연결
-
 2. `pc.v`
+
    - Program Counter
    - 현재 실행할 instruction 주소 저장
    - 일반 명령어 실행 후 PC + 1
    - JMP, JZ, JNZ 실행 시 지정 주소로 변경
-
 3. `alu.v`
+
    - ADD, SUB, CMP, ADDI, CMPI 연산 수행
    - ZERO_FLAG 생성
-
 4. `accumulator.v`
+
    - ACC 레지스터
    - 연산 결과, LOAD 결과, IN 결과 저장
-
 5. `decoder.v`
+
    - `instruction[31:28]` opcode 해석
    - `instruction[27:0]` operand 분리
    - opcode별 제어 신호 생성
-
 6. `cpu_fsm.v`
+
    - CPU 실행 단계 FSM
    - FETCH / DECODE / EXECUTE / INCREMENT 상태 제어
    - 도어락 상태 FSM이 아니라 CPU 실행 단계 FSM임
-
 7. `inst_reg.v`
+
    - Instruction Register
    - BRAM에서 읽어온 32비트 instruction 저장
-
 8. `define.vh`
+
    - 프로젝트 상수 정의 파일
    - opcode, CPU state, IN port 번호, OUT code, 기타 상수 정의
+9. `debouncer.v`
 
-9. `assembler.py`
-   - assembly 코드를 32비트 기계어로 변환하는 스크립트
-   - `doorlock.asm` → `doorlock.mem` 또는 `doorlock.coe` 생성
-
-10. `debouncer.v`
-   - 버튼 디바운싱 모듈
-   - 입력 버튼, 확정 버튼, 취소 버튼, 비밀번호 변경 버튼, 마스터키 입력 등에 사용 가능
+- 버튼 디바운싱 모듈
+- 입력 버튼, 확정 버튼, 취소 버튼, 비밀번호 변경 버튼, 마스터키 입력 등에 사용 가능
 
 ---
 
 ## 2. 기본 Spec
 
-Instruction width : 32 bit  
-Opcode width : 4 bit  
-Operand / Address / Immediate field : 28 bit  
+Instruction width : 32 bit
+Opcode width : 4 bit
+Operand / Address / Immediate field : 28 bit
 
 메모리:
 
@@ -80,9 +77,7 @@ CPU 기본 레지스터:
 
 operand 28비트는 명령어 종류에 따라 다르게 사용된다.
 
-- LOADI에서는 즉시값
-- ADDI에서는 즉시값
-- CMPI에서는 즉시값
+- LOADI, ADDI, CMPI에서는 즉시값
 - LOAD / STORE / ADD / SUB / CMP에서는 BRAM 주소
 - JMP / JZ / JNZ에서는 점프할 instruction 주소
 - IN / OUT에서는 port 번호
@@ -104,13 +99,9 @@ operand 28비트는 명령어 종류에 따라 다르게 사용된다.
 32비트 명령어를 사용하는 이유는 다음과 같다.
 
 1. 입력, 출력, 비교, 점프, 메모리 접근, 상태 표시 등 다양한 동작을 표현해야 한다.
-
 2. 비밀번호 입력 길이가 4자리에서 8자리까지 유동적이고, 데이터 저장 단위를 32비트로 통일하면 CPU와 BRAM 연결이 단순해진다.
-
 3. LOADI 명령어로 최대 28비트 즉시값을 ACC에 바로 넣을 수 있다.
-
 4. 실패 횟수, 입력 길이, 비밀번호 길이, 상태 코드 등을 operand 또는 BRAM 데이터로 처리하기 쉽다.
-
 5. 4비트 opcode만으로 명령어 종류를 구분하고, 나머지 28비트를 넉넉한 operand 영역으로 사용하면 assembly 작성이 단순해진다.
 
 ---
@@ -119,30 +110,30 @@ operand 28비트는 명령어 종류에 따라 다르게 사용된다.
 
 ### 4.1 Opcode 테이블
 
-| opcode | 니모닉 | Type | 동작 |
-|---|---|---|---|
-| 0000 | LOAD | M | BRAM[addr] → ACC |
-| 0001 | STORE | M | ACC → BRAM[addr] |
-| 0010 | ADD | M | ACC + BRAM[addr] → ACC, ZERO_FLAG 업데이트 |
-| 0011 | SUB | M | ACC - BRAM[addr] → ACC, ZERO_FLAG 업데이트 |
-| 0100 | CMP | M | ACC와 BRAM[addr] 비교, ZERO_FLAG만 업데이트, ACC 보존 |
-| 0101 | LOADI | I | immediate → ACC |
-| 0110 | ADDI | I | ACC + immediate → ACC, ZERO_FLAG 업데이트 |
-| 0111 | CMPI | I | ACC와 immediate 비교, ZERO_FLAG만 업데이트, ACC 보존 |
-| 1000 | JMP | J | PC ← addr |
-| 1001 | JZ | J | ZERO_FLAG = 1이면 PC ← addr |
-| 1010 | JNZ | J | ZERO_FLAG = 0이면 PC ← addr |
-| 1011 | NOP | N | 아무 동작 없음, PC만 증가 |
-| 1100 | OUT | P | ACC[3:0] → out_port[3:0] |
-| 1101 | IN | P | 외부 입력 port 값을 ACC에 저장 |
-| 1110 | RESERVED | - | NOP처럼 처리 |
-| 1111 | RESERVED | - | NOP처럼 처리 |
+| opcode | 니모닉   | Type | 동작                                                  |
+| ------ | -------- | ---- | ----------------------------------------------------- |
+| 0000   | LOAD     | M    | BRAM[addr] → ACC                                     |
+| 0001   | STORE    | M    | ACC → BRAM[addr]                                     |
+| 0010   | ADD      | M    | ACC + BRAM[addr] → ACC, ZERO_FLAG 업데이트           |
+| 0011   | SUB      | M    | ACC - BRAM[addr] → ACC, ZERO_FLAG 업데이트           |
+| 0100   | CMP      | M    | ACC와 BRAM[addr] 비교, ZERO_FLAG만 업데이트, ACC 보존 |
+| 0101   | LOADI    | I    | immediate → ACC                                      |
+| 0110   | ADDI     | I    | ACC + immediate → ACC, ZERO_FLAG 업데이트            |
+| 0111   | CMPI     | I    | ACC와 immediate 비교, ZERO_FLAG만 업데이트, ACC 보존  |
+| 1000   | JMP      | J    | PC ← addr                                            |
+| 1001   | JZ       | J    | ZERO_FLAG = 1이면 PC ← addr                          |
+| 1010   | JNZ      | J    | ZERO_FLAG = 0이면 PC ← addr                          |
+| 1011   | NOP      | N    | 아무 동작 없음, PC만 증가                             |
+| 1100   | OUT      | P    | ACC[3:0] → out_port[3:0]                             |
+| 1101   | IN       | P    | 외부 입력 port 값을 ACC에 저장                        |
+| 1110   | RESERVED | -    | NOP처럼 처리                                          |
+| 1111   | RESERVED | -    | NOP처럼 처리                                          |
 
 ---
 
 ### 4.2 Type 설명
 
-Type은 문서 설명용이다.  
+Type은 문서 설명용이다.
 Decoder 구현 시 상위 2비트만 보고 타입을 판단하지 않는다.
 
 Decoder는 반드시 opcode 4비트 전체를 기준으로 case문 처리한다.
@@ -175,36 +166,36 @@ endcase
 
 ### 5.1 CPU 입력 포트
 
-| 신호 | 비트폭 | 설명 |
-|---|---|---|
-| clk | 1 | 클럭 |
-| reset | 1 | 동기 리셋 |
+| 신호       | 비트폭 | 설명             |
+| ---------- | ------ | ---------------- |
+| clk        | 1      | 클럭             |
+| reset      | 1      | 동기 리셋        |
 | bram_rdata | [31:0] | BRAM 읽기 데이터 |
-| in_port | [8:0] | 외부 입력 묶음 |
+| in_port    | [8:0]  | 외부 입력 묶음   |
 
 ---
 
 ### 5.2 in_port 구성
 
-| 비트 | 용도 | 설명 |
-|---|---|---|
-| in_port[3:0] | 숫자값 | input_handler가 PMOD one-hot 입력을 4비트 숫자로 인코딩한 값 |
-| in_port[4] | 입력 버튼 | 숫자 하나를 입력으로 확정 |
-| in_port[5] | 확정 버튼 | 전체 입력 완료 후 확인 |
-| in_port[6] | 취소 버튼 | 최근 입력 한 자리 취소 |
-| in_port[7] | 비밀번호 변경 | 비밀번호 변경 모드 진입 |
-| in_port[8] | 마스터키 | 마스터키 조건 만족 신호 |
+| 비트         | 용도          | 설명                                                           |
+| ------------ | ------------- | -------------------------------------------------------------- |
+| in_port[3:0] | 숫자값        | input_handler가 PMOD one-hot 입력을 4비트 2진수로 인코딩한 값 |
+| in_port[4]   | 입력 버튼     | 숫자 하나를 입력으로 확정                                      |
+| in_port[5]   | 확정 버튼     | 전체 입력 완료 후 확인                                         |
+| in_port[6]   | 취소 버튼     | 최근 입력 한 자리 취소                                         |
+| in_port[7]   | 비밀번호 변경 | 비밀번호 변경 모드 진입                                        |
+| in_port[8]   | 마스터키      | 마스터키 조건 만족 신호                                        |
 
 ---
 
 ### 5.3 CPU 출력 포트
 
-| 신호 | 비트폭 | 설명 |
-|---|---|---|
-| bram_addr | [11:0] | BRAM 주소 |
-| bram_wdata | [31:0] | BRAM 쓰기 데이터 |
-| bram_we | 1 | BRAM write enable |
-| out_port | [3:0] | 도어락 출력 상태 코드 |
+| 신호       | 비트폭 | 설명                  |
+| ---------- | ------ | --------------------- |
+| bram_addr  | [11:0] | BRAM 주소             |
+| bram_wdata | [31:0] | BRAM 쓰기 데이터      |
+| bram_we    | 1      | BRAM write enable     |
+| out_port   | [3:0]  | 도어락 출력 상태 코드 |
 
 ---
 
@@ -226,7 +217,7 @@ out_port[3:0] : 도어락 출력 상태 코드
 0001 : 3회 오답 + 잠금
 ```
 
-즉, 1회 오답에서 2회 오답으로 넘어갈 때 기존 bit를 따로 끄는 방식이 아니다.  
+즉, 1회 오답에서 2회 오답으로 넘어갈 때 기존 bit를 따로 끄는 방식이 아니다.
 OUT 명령어가 out_port 전체 4비트를 새 값으로 덮어쓴다.
 
 예시:
@@ -281,15 +272,10 @@ state R   : FETCH / DECODE / EXECUTE / INCREMENT
 ## 7. 공통 규칙
 
 1. 일반 명령어는 실행 후 PC = PC + 1
-
 2. JMP, JZ, JNZ는 조건에 따라 PC를 직접 변경한다.
-
 3. LOAD, STORE, ADD, SUB, CMP의 operand는 BRAM 주소이다.
-
 4. JMP, JZ, JNZ의 operand는 instruction 주소이다.
-
 5. IN, OUT의 operand는 port 번호이다.
-
 6. IN, OUT에서 사용하는 port 번호는 operand[3:0]만 사용한다.
 
 ```verilog
@@ -304,11 +290,8 @@ bram_addr = operand[11:0]
 ```
 
 8. operand[27:12]는 현재 BRAM 주소로 사용하지 않는다.
-
 9. ZERO_FLAG는 ADD, SUB, ADDI, CMP, CMPI에서만 업데이트한다.
-
 10. LOAD, STORE, LOADI, IN, OUT, JMP, JZ, JNZ, NOP은 ZERO_FLAG를 변경하지 않는다.
-
 11. 예약 opcode 1110, 1111은 NOP처럼 처리한다.
 
 ---
@@ -698,7 +681,7 @@ IN 4 → ACC <- {31'b0, in_port[7]}
 IN 5 → ACC <- {31'b0, in_port[8]}
 
 의미:
-IN 0 : input_handler가 전달한 숫자값
+IN 0 : input_handler가 전달한 2진수 숫자값
 IN 1 : 입력 버튼
 IN 2 : 확정 버튼
 IN 3 : 취소 버튼
