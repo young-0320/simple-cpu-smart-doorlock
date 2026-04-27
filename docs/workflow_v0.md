@@ -39,7 +39,7 @@
 7. debouncer.v	      ← 버튼 디바운싱 모듈
 8. fsm.v  
 9. inst_reg.v         ← Instruction Register
-10. bram               ← Vivado IP로 생성
+10. bram              ← Vivado IP로 생성
 11. input_handler.v   ← PMOD로 입력되는 raw data를 처리하는 모듈
 12. output_handler.v  ← LED, 잠금 신호 등 출력 처리 모듈 
 13. define.vh         ← 프로젝트 상수 정의 파일 (ISA, 메모리 맵 등)
@@ -58,6 +58,7 @@ top_doorlock.v
 │   ├── fsm.v
 │   ├── decoder.v
 │   ├── alu.v
+│   ├── debouncer.v
 │   └── accumulator.v
 ├── bram (Vivado IP)
 ├── input_handler.v
