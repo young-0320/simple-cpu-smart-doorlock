@@ -7,7 +7,7 @@
 5월 1일 시연 영상과 발표 자료 업로드
 5월 15일 발표 (질의응답 준비)
 
-GitHub Repository URL: https://github.com/young-0320/simple-cpu-smart-doorlock
+GitHub Repository URL: https://github.com/KHU-digital-design/simple-cpu-smart-doorlock
 
 2조: 유경민, 이윤서, 한영웅, 허원석
 
@@ -24,29 +24,20 @@ instruction을 BRAM에 다 넣은 상태에서 초기화를 한번 한 상태를
 
 ---
 
-강의자료의  simple cpu의 기본 구조는 그대로 두고
-ALU 수정은 가능한 형태로 구성(ALU 기능 추가 가능)
-
-이때 4 cycle per operation은 유지.  스마트 도어락 시스템을 FPGA로 구현하기
-입력은 PMOD와 브레드 보드(선)활용 가능(즉 BCD코드 입력 등등) -> 버튼 활용도 괜찮을 듯
-"스마트" 도어락이니 기능 추가 필요
-하나의 BRAM을 main memory(data 및 intruction)로 활용
-
-instruction을 BRAM에 다 넣은 상태에서 초기화를 한번 했다고 가정
 
 ## 역할분담
 
-한영웅 허원석 : CPU 설계
+한영웅, 허원석 : CPU 설계
 
-유경민 : BRAM 인터페이스 + 어셈블리
+유경민 : BRAM ip + 어셈블리
     - BRAM 단일 포트 설계
     - 메모리 맵 정의
     - 어셈블리 프로그램 작성
     - 기계어 변환 스크립트 (Python)
-    - .coe 파일 생성
+    - .coe(혹은 .mem) 파일 생성
 
 이윤서 : 입출력 + Top-level
 
-    - 입력 처리 (PMOD / BCD)
+    - 입력 처리 (PMOD / one hot -> 2진수 인코딩)
     - LED / 잠금 출력
-    - top 모듈 통합
+    - top 모듈 통합 및 테스트벤치 작성 후 검증
