@@ -95,17 +95,15 @@ module top_doorlock (
     wire [31:0] bram_wdata;
     wire [31:0] bram_rdata;
     wire        bram_we;
-    
-    assign bram_rdata = 32'hB0000000; // 임시 cpu 입력
 
-//    blk_mem_gen_0 u_bram (
-//        .clka  (clk_cpu),      // 클럭
-//        .ena   (1'b1),         // 항상 enable
-//        .wea   (bram_we),      // write enable
-//        .addra (bram_addr),    // 주소 (12비트)
-//        .dina  (bram_wdata),   // 쓰기 데이터
-//        .douta (bram_rdata)    // 읽기 데이터
-//    );
+    blk_mem_gen_0 u_bram (
+        .clka  (clk_cpu),      // 클럭
+        .ena   (1'b1),         // 항상 enable
+        .wea   ({bram_we}),      // write enable
+        .addra (bram_addr),    // 주소 (12비트)
+        .dina  (bram_wdata),   // 쓰기 데이터
+        .douta (bram_rdata)    // 읽기 데이터
+    );
 
     // ---------------------------------------------------------
     // 5. Input Handler
