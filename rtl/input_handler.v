@@ -25,27 +25,22 @@ module input_handler (
     input  wire        clk,
     input  wire        reset,
 
-    // PMOD raw 입력 (10비트 one-hot, 0~9, 점퍼선)
-    input  wire [9:0]  pmod_key,
+    input  wire [9:0]  pmod_key,    // JE/JD 점퍼선
+    input  wire        btn_input,   // BTN1 온보드 버튼
+    input  wire        btn_confirm, // BTN2 온보드 버튼
+    input  wire        btn_cancel,  // BTN3 온보드 버튼
+    input  wire        btn_change,  // SW0  온보드 스위치
+    input  wire        btn_master,  // SW1  온보드 스위치
 
-    // 버튼 raw 입력 (active-high, 물리 버튼)
-    input  wire        btn_input,
-    input  wire        btn_confirm,
-    input  wire        btn_cancel,
-    input  wire        btn_change,
-    input  wire        btn_master,
-
-    // CPU in_port
     output wire [8:0]  in_port
 );
 
     // ---------------------------------------------------------
-    // 1. pmod_key debounce
-    //    key_level: 꽂혀있는 동안 HIGH 유지 → 숫자 인코딩에 사용
+    // 1. pmod_key debounce → key_level 사용
     // ---------------------------------------------------------
 
     wire [9:0] key_level;
-    wire [9:0] key_pulse_nc; // 미사용
+    wire [9:0] key_pulse_nc;
 
     genvar i;
     generate
@@ -61,7 +56,10 @@ module input_handler (
     endgenerate
 
     // ---------------------------------------------------------
-    // 2. 버튼 debounce (pulse만 사용 → 래치 SET 트리거)
+    // 2. 버튼/스위치 debounce → pulse → 래치 SET 트리거
+    //    버튼: 누르는 순간 상승 에지
+    //    스위치: 올리는 순간 상승 에지
+    //    동일한 debouncer로 처리 가능
     // ---------------------------------------------------------
 
     wire pulse_input,   level_nc_input;
@@ -103,7 +101,7 @@ module input_handler (
 
     // ---------------------------------------------------------
     // 3. 10비트 one-hot → 4비트 우선순위 인코더
-    //    key_level 기반: 점퍼선이 꽂혀있는 동안 유효값 유지
+    //    key_level 기반: 점퍼 꽂혀있는 동안 유효값 유지
     //    동시 입력 시 낮은 번호(0) 우선
     // ---------------------------------------------------------
 
@@ -126,20 +124,9 @@ module input_handler (
     end
 
     // ---------------------------------------------------------
-    // 4. 버튼 래치 레지스터 (self-clearing)
-    //
-    //    pulse 발생 → SET (1)
-    //    SET 상태에서 다음 클럭 → CLR (0)  ← CPU가 읽은 직후
+    // 4. self-clearing 래치
+    //    pulse → SET(1), 다음 클럭 자동 CLR(0)
     //    SET과 CLR 동시 → SET 우선 (새 pulse 손실 방지)
-    //
-    //    결과적으로 래치는 정확히 1클럭 동안 HIGH를 유지
-    //    CPU의 4-cycle 구조에서 MAIN_WAIT 루프(28+ 사이클)를
-    //    여러 바퀴 돌더라도 펄스를 놓치지 않으려면
-    //    래치가 CPU의 IN 명령 실행 타이밍까지 유지돼야 함
-    //
-    //    → 1클럭 자동 CLR 대신, CPU가 해당 포트를 읽어
-    //      in_port[n]이 1로 출력된 직후 CLR하는 방식 사용
-    //      (in_port[n] == 1이 출력된 다음 클럭에 CLR)
     // ---------------------------------------------------------
 
     reg latch_input;
@@ -157,34 +144,20 @@ module input_handler (
             latch_master  <= 1'b0;
         end
         else begin
-            // SET: pulse 발생 시 (우선순위 높음)
-            // CLR: 래치가 1인 상태에서 다음 클럭
-            //      → CPU가 in_port를 읽으면 다음 사이클에 자동 클리어
+            if (pulse_input)        latch_input   <= 1'b1;
+            else if (latch_input)   latch_input   <= 1'b0;
 
-            if (pulse_input)
-                latch_input <= 1'b1;
-            else if (latch_input)
-                latch_input <= 1'b0;
+            if (pulse_confirm)      latch_confirm <= 1'b1;
+            else if (latch_confirm) latch_confirm <= 1'b0;
 
-            if (pulse_confirm)
-                latch_confirm <= 1'b1;
-            else if (latch_confirm)
-                latch_confirm <= 1'b0;
+            if (pulse_cancel)       latch_cancel  <= 1'b1;
+            else if (latch_cancel)  latch_cancel  <= 1'b0;
 
-            if (pulse_cancel)
-                latch_cancel <= 1'b1;
-            else if (latch_cancel)
-                latch_cancel <= 1'b0;
+            if (pulse_change)       latch_change  <= 1'b1;
+            else if (latch_change)  latch_change  <= 1'b0;
 
-            if (pulse_change)
-                latch_change <= 1'b1;
-            else if (latch_change)
-                latch_change <= 1'b0;
-
-            if (pulse_master)
-                latch_master <= 1'b1;
-            else if (latch_master)
-                latch_master <= 1'b0;
+            if (pulse_master)       latch_master  <= 1'b1;
+            else if (latch_master)  latch_master  <= 1'b0;
         end
     end
 
