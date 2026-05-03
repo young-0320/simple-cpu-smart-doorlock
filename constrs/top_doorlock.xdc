@@ -12,8 +12,8 @@ create_clock -add -name sys_clk_pin -period 8.00 -waveform {0 4} [get_ports { cl
 
 
 ##Switches
-#set_property -dict { PACKAGE_PIN G15   IOSTANDARD LVCMOS33 } [get_ports { sw[0] }]; #IO_L19N_T3_VREF_35 Sch=sw[0]
-#set_property -dict { PACKAGE_PIN P15   IOSTANDARD LVCMOS33 } [get_ports { sw[1] }]; #IO_L24P_T3_34 Sch=sw[1]
+set_property -dict { PACKAGE_PIN G15   IOSTANDARD LVCMOS33 } [get_ports { btn_change }]; #IO_L19N_T3_VREF_35 Sch=sw[0]
+set_property -dict { PACKAGE_PIN P15   IOSTANDARD LVCMOS33 } [get_ports { btn_master }]; #IO_L24P_T3_34 Sch=sw[1]
 #set_property -dict { PACKAGE_PIN W13   IOSTANDARD LVCMOS33 } [get_ports { sw[2] }]; #IO_L4N_T0_34 Sch=sw[2]
 #set_property -dict { PACKAGE_PIN T16   IOSTANDARD LVCMOS33 } [get_ports { sw[3] }]; #IO_L9P_T1_DQS_34 Sch=sw[3]
 
@@ -138,8 +138,8 @@ set_property -dict { PACKAGE_PIN D18   IOSTANDARD LVCMOS33 } [get_ports { led[3]
 ##Pmod Header JD                                                                                                                  
 set_property -dict { PACKAGE_PIN T14   IOSTANDARD LVCMOS33     } [get_ports { pmod_key[8] }]; #IO_L5P_T0_34 Sch=jd_p[1]                  
 set_property -dict { PACKAGE_PIN T15   IOSTANDARD LVCMOS33     } [get_ports { pmod_key[9] }]; #IO_L5N_T0_34 Sch=jd_n[1]				 
-set_property -dict { PACKAGE_PIN P14   IOSTANDARD LVCMOS33     } [get_ports { btn_change }]; #IO_L6P_T0_34 Sch=jd_p[2]                  
-set_property -dict { PACKAGE_PIN R14   IOSTANDARD LVCMOS33     } [get_ports { btn_master }]; #IO_L6N_T0_VREF_34 Sch=jd_n[2]             
+#set_property -dict { PACKAGE_PIN P14   IOSTANDARD LVCMOS33     } [get_ports { btn_change }]; #IO_L6P_T0_34 Sch=jd_p[2]                  
+#set_property -dict { PACKAGE_PIN R14   IOSTANDARD LVCMOS33     } [get_ports { btn_master }]; #IO_L6N_T0_VREF_34 Sch=jd_n[2]             
 #set_property -dict { PACKAGE_PIN U14   IOSTANDARD LVCMOS33     } [get_ports { btn_cancel }]; #IO_L11P_T1_SRCC_34 Sch=jd_p[3]            
 #set_property -dict { PACKAGE_PIN U15   IOSTANDARD LVCMOS33     } [get_ports { btn_change }]; #IO_L11N_T1_SRCC_34 Sch=jd_n[3]            
 #set_property -dict { PACKAGE_PIN V17   IOSTANDARD LVCMOS33     } [get_ports { btn_master }]; #IO_L21P_T3_DQS_34 Sch=jd_p[4]             
@@ -156,6 +156,16 @@ set_property -dict { PACKAGE_PIN U17   IOSTANDARD LVCMOS33 } [get_ports { pmod_k
 set_property -dict { PACKAGE_PIN T17   IOSTANDARD LVCMOS33 } [get_ports { pmod_key[6] }]; #IO_L20P_T3_34 Sch=je[9]                     
 set_property -dict { PACKAGE_PIN Y17   IOSTANDARD LVCMOS33 } [get_ports { pmod_key[7] }]; #IO_L7N_T1_34 Sch=je[10]                    
 
+#set_property PULLDOWN true [get_ports { pmod_key[0] }];
+#set_property PULLDOWN true [get_ports { pmod_key[1] }];
+#set_property PULLDOWN true [get_ports { pmod_key[2] }];
+#set_property PULLDOWN true [get_ports { pmod_key[3] }];
+#set_property PULLDOWN true [get_ports { pmod_key[4] }];
+#set_property PULLDOWN true [get_ports { pmod_key[5] }];
+#set_property PULLDOWN true [get_ports { pmod_key[6] }];
+#set_property PULLDOWN true [get_ports { pmod_key[7] }];
+#set_property PULLDOWN true [get_ports { pmod_key[8] }];
+#set_property PULLDOWN true [get_ports { pmod_key[9] }];
 
 ##Pcam MIPI CSI-2 Connector
 ## This configuration expects the sensor to use 672Mbps/lane = 336 MHz HS_Clk
