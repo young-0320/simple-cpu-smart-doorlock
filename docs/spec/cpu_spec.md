@@ -701,7 +701,7 @@ IN 5
 
 ---
 
-### opcode 1110, 1111 : RESERVED
+### opcode 1110: RESERVED
 
 ```text
 동작:
@@ -717,7 +717,42 @@ ZERO_FLAG:
 ```
 
 ---
+### opcode 1111: ADDITION
 
+```text
+동작:
+funct_bin(4비트)을 디코딩하여 지정된 연산을 수행하고 그 결과를 ACC에 저장
+PC <- PC + 1
+
+
+세부 동작 (funct_bin 매핑):
+[0000] SHL : ACC <- ACC << MEM[address]  (또는 설계에 따라 ACC << address 즉시값)
+[0001] SHR : ACC <- ACC >> MEM[address]  (또는 설계에 따라 ACC >> address 즉시값)
+[0010] AND : ACC <- ACC & MEM[address]
+
+ZERO_FLAG:
+연산 결과(ACC 갱신 값)가 0이면 1, 아니면 0으로 갱신 (일반적인 ALU 연산 규칙 적용)
+
+비트 할당 (총 32비트 가정):
+instruction[31:28] = 1111 (opcode)
+instruction[27:24] = funct_bin (0000: SHL, 0001: SHR, 0010: AND)
+instruction[23:12] = reserved_bin (추후 확장을 위한 예비 공간, 현재는 0으로 채움)
+instruction[11:0]  = address (피연산자 메모리 주소 또는 즉시값)
+
+현재 사용 방식:
+- 기존의 opcode 공간이 부족해질 것을 대비해 1111을 확장용(Escape Opcode)으로 사용한다.
+- Control Unit은 opcode가 1111일 때 funct_bin 필드를 추가로 디코딩하여 ALU 제어 신호를 생성한다.
+
+예시:
+SHL 5
+→ funct_bin = 0000, address = 5
+→ 동작: ACC <- ACC << MEM[5] 
+
+AND 12
+→ funct_bin = 0010, address = 12
+→ 동작: ACC <- ACC & MEM[12]
+
+---
 ## 9. BRAM 관련 주의사항
 
 BRAM이 동기식 read인지 비동기식 read인지에 따라 CPU FSM 구현이 달라질 수 있다.

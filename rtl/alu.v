@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`include "define.vh"
 
 module alu (
     input  wire [31:0] acc_in,
@@ -14,30 +15,39 @@ module alu (
         zero_result = 1'b0;
 
         case (alu_ctrl)
-            3'd0: begin
-                // ADD
+            `ALU_ADD: begin
                 alu_result  = acc_in + operand_in;
                 zero_result = (alu_result == 32'd0);
             end
 
-            3'd1: begin
-                // SUB
+            `ALU_SUB: begin
                 alu_result  = acc_in - operand_in;
                 zero_result = (alu_result == 32'd0);
             end
 
-            3'd2: begin
-                // CMP
-                // ACC 값은 바꾸지 않고, 비교 결과만 zero_result로 전달
+            `ALU_CMP: begin
                 alu_result  = acc_in;
                 zero_result = (acc_in == operand_in);
             end
 
-            3'd3: begin
-                // PASS_IN
-                // LOADI, IN 같은 값 전달용
+            `ALU_PASS: begin
                 alu_result  = operand_in;
                 zero_result = (operand_in == 32'd0);
+            end
+
+            `ALU_SHL: begin
+                alu_result  = acc_in << operand_in[4:0];
+                zero_result = (alu_result == 32'd0);
+            end
+
+            `ALU_SHR: begin
+                alu_result  = acc_in >> operand_in[4:0];
+                zero_result = (alu_result == 32'd0);
+            end
+
+            `ALU_AND: begin
+                alu_result  = acc_in & operand_in;
+                zero_result = (alu_result == 32'd0);
             end
 
             default: begin

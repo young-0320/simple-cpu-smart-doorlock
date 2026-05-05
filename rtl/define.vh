@@ -31,7 +31,7 @@
 `define OP_OUT      4'b1100
 `define OP_IN       4'b1101
 `define OP_RESV1    4'b1110
-`define OP_RESV2    4'b1111
+`define OP_EXT      4'b1111
 
 // =======================================================
 // 2. CPU FSM States (2-bit)
@@ -66,7 +66,10 @@
 `define ALU_ADD     3'd0
 `define ALU_SUB     3'd1
 `define ALU_CMP     3'd2
-`define ALU_PASS    3'd3  // 데이터 패스스루 (LOADI, IN 등에서 사용)
+`define ALU_PASS    3'd3
+`define ALU_SHL     3'd4
+`define ALU_SHR     3'd5
+`define ALU_AND     3'd6
 
 // =======================================================
 // 6. Branch/Jump Types (Internal Routing)
@@ -74,5 +77,13 @@
 `define JMP_UNCOND  2'd0  // 무조건 점프 (JMP)
 `define JMP_JZ      2'd1  // 조건 점프 (JZ)
 `define JMP_JNZ     2'd2  // 조건 점프 (JNZ)
+
+// =======================================================
+// 7. Extended Function Codes for OP_EXT / A-type
+// opcode 1111일 때만 사용
+// =======================================================
+`define EXT_SHL     4'b0000
+`define EXT_SHR     4'b0001
+`define EXT_AND     4'b0010
 
 `endif // _DEFINE_VH_

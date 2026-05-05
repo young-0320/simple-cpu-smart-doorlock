@@ -22,29 +22,31 @@
 `include "define.vh"
 
 module top_doorlock (
-    // 보드 클럭 (Zybo Z7-20 기준 125MHz, 핀 K17)
+    // 보드 클럭 (Zybo Z7-20, 125MHz, 핀 K17)
     input  wire        clk,
 
-    // 보드 리셋 버튼 (active-high 가정, XDC에서 확인)
+    // 리셋 (BTN0, K18, active-high)
     input  wire        ext_reset,
 
-    // PMOD 숫자 입력 (10비트 one-hot, 0~9)
+    // PMOD 숫자 입력 (10비트 one-hot, JE/JD 점퍼선)
     input  wire [9:0]  pmod_key,
 
-    // 제어 버튼 (active-high, 디바운스는 input_handler 내부 처리)
-    input  wire        btn_input,    // 자리 입력 확정
-    input  wire        btn_confirm,  // 전체 비밀번호 확정
-    input  wire        btn_cancel,   // 취소
-    input  wire        btn_change,   // 비밀번호 변경 모드
-    input  wire        btn_master,   // 마스터키
+    // 입력 버튼 (BTN1~BTN3 온보드 버튼)
+    input  wire        btn_input,    // BTN1 P16: 자리 입력 확정
+    input  wire        btn_confirm,  // BTN2 K19: 전체 비밀번호 확정
+    input  wire        btn_cancel,   // BTN3 Y16: 취소
 
-    // 도어락 출력
+    // 스위치 (SW0~SW1 온보드 슬라이드 스위치)
+    input  wire        btn_change,   // SW0 G15: 비밀번호 변경 모드
+    input  wire        btn_master,   // SW1 P15: 마스터키
+
+    // 도어락 출력 (JD10, V18, 외부 LED)
     output wire        door_open,
 
-    // LED 출력 (4비트)
+    // 온보드 LED LD0~LD3
     output wire [3:0]  led,
 
-    // 디버그 출력 (필요 시 ILA 연결 또는 제거)
+    // 디버그 출력
     output wire [11:0] pc_debug,
     output wire [31:0] acc_debug,
     output wire        zero_flag_debug,
@@ -52,60 +54,54 @@ module top_doorlock (
 );
 
     // ---------------------------------------------------------
-    // 1. Clocking Wizard (Vivado IP 인스턴스)
-    //    - 인스턴스 이름은 Vivado에서 생성한 IP 이름과 맞출 것
-    //    - clk_out1 주파수: define.vh의 CLK_FREQ와 일치해야 함
-    //      현재 CLK_FREQ = 10MHz → Clocking Wizard 출력도 10MHz
+    // 1. Clocking Wizard
+    //    Input:  125MHz (clk)
+    //    Output: 7MHz   (clk_cpu)
     // ---------------------------------------------------------
 
     wire clk_cpu;
     wire clk_locked;
 
     clk_wiz_0 u_clk_wiz (
-        .clk_out1 (clk_cpu),      // 출력 클럭 (10MHz)
-        .locked   (clk_locked),    // MMCM lock 완료 신호
-        .clk_in1  (clk)    // 보드 입력 클럭 (125MHz)
+        .clk_out1 (clk_cpu),
+        .locked   (clk_locked),
+        .clk_in1  (clk)
     );
 
     // ---------------------------------------------------------
-    // 2. 시스템 reset 생성
-    //    - MMCM lock 전 또는 ext_reset 시 CPU 리셋 유지
+    // 2. 시스템 reset
+    //    PLL lock 전 또는 ext_reset 시 CPU reset 유지
     // ---------------------------------------------------------
 
     wire sys_reset;
     assign sys_reset = ext_reset | ~clk_locked;
 
     // ---------------------------------------------------------
-    // 3. clk_enable (상시 1 - 추후 저전력 모드 확장 가능)
-    //    현재는 항상 동작, 추후 WAIT 명령어 등 연동 시 수정
+    // 3. clk_enable (상시 1, 추후 저전력 모드 연동 시 수정)
     // ---------------------------------------------------------
 
     wire clk_enable;
     assign clk_enable = 1'b1;
 
     // ---------------------------------------------------------
-    // 4. BRAM (Vivado Block Memory Generator IP)
-    //    - IP 이름: blk_mem_gen_0 (Vivado에서 생성한 이름과 맞출 것)
-    //    - Port 설정: Single Port RAM, Width=32, Depth=4096
-    //    - Read Latency: 1 (동기식)
-    //    - Init File: doorlock.coe
+    // 4. BRAM
+    //    Single Port RAM, Width=32, Depth=4096
+    //    Init File: doorlock.coe
     // ---------------------------------------------------------
 
     wire [11:0] bram_addr;
     wire [31:0] bram_wdata;
     wire [31:0] bram_rdata;
     wire        bram_we;
-    
-    assign bram_rdata = 32'hB0000000; // 임시 cpu 입력
 
-//    blk_mem_gen_0 u_bram (
-//        .clka  (clk_cpu),      // 클럭
-//        .ena   (1'b1),         // 항상 enable
-//        .wea   (bram_we),      // write enable
-//        .addra (bram_addr),    // 주소 (12비트)
-//        .dina  (bram_wdata),   // 쓰기 데이터
-//        .douta (bram_rdata)    // 읽기 데이터
-//    );
+    blk_mem_gen_0 u_bram (
+        .clka  (clk_cpu),
+        .ena   (1'b1),
+        .wea   ({bram_we}),
+        .addra (bram_addr),
+        .dina  (bram_wdata),
+        .douta (bram_rdata)
+    );
 
     // ---------------------------------------------------------
     // 5. Input Handler
@@ -114,15 +110,15 @@ module top_doorlock (
     wire [8:0] in_port;
 
     input_handler u_input_handler (
-        .clk        (clk_cpu),
-        .reset      (sys_reset),
-        .pmod_key   (pmod_key),
-        .btn_input  (btn_input),
-        .btn_confirm(btn_confirm),
-        .btn_cancel (btn_cancel),
-        .btn_change (btn_change),
-        .btn_master (btn_master),
-        .in_port    (in_port)
+        .clk         (clk_cpu),
+        .reset       (sys_reset),
+        .pmod_key    (pmod_key),
+        .btn_input   (btn_input),
+        .btn_confirm (btn_confirm),
+        .btn_cancel  (btn_cancel),
+        .btn_change  (btn_change),
+        .btn_master  (btn_master),
+        .in_port     (in_port)
     );
 
     // ---------------------------------------------------------

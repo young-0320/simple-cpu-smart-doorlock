@@ -48,6 +48,7 @@ module top_cpu (
     wire        is_store;
     wire        is_alu_mem;
     wire        is_alu_imm;
+    wire        is_ext_imm;
     wire        is_jump;
     wire        is_in;
     wire        is_out;
@@ -117,6 +118,7 @@ module top_cpu (
         .is_store    (is_store),
         .is_alu_mem  (is_alu_mem),
         .is_alu_imm  (is_alu_imm),
+        .is_ext_imm  (is_ext_imm),
         .is_jump     (is_jump),
         .is_in       (is_in),
         .is_out      (is_out),
@@ -147,7 +149,9 @@ module top_cpu (
     // ALU
     // =======================================================
 
-    assign alu_operand = (is_alu_imm) ? {4'b0000, imm} : bram_rdata;
+    assign alu_operand = is_alu_imm ? {4'b0000, imm}  :
+                         is_ext_imm ? {20'b0, addr}    :
+                                      bram_rdata;
 
     alu u_alu (
         .acc_in      (acc_out),
@@ -235,7 +239,7 @@ module top_cpu (
                 acc_in = selected_input;
                 acc_we = 1'b1;
             end
-            else if (is_alu_imm || is_alu_mem) begin
+            else if (is_alu_imm || is_alu_mem || is_ext_imm) begin
                 if (alu_ctrl != `ALU_CMP) begin
                     acc_in = alu_result;
                     acc_we = 1'b1;
