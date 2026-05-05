@@ -34,8 +34,8 @@ def assemble_line (cmd, operand):
     if cmd in EXT_FUNCT_MAP:
         opcode_bin = "1111"
         funct_bin = EXT_FUNCT_MAP[cmd]
-        reserved_bin = "00000000"  # 8-bit 0
-        operand_bin = format (dec_val, '016b')
+        reserved_bin = "000000000000"  # 12-bit 0
+        operand_bin = format (dec_val, '012b')
         bin_32 = opcode_bin + funct_bin + reserved_bin + operand_bin
     
 
