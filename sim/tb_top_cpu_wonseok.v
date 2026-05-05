@@ -11,7 +11,7 @@
 `timescale 1ns / 1ps
 `include "define.vh"
 
-module tb_top_cpu;
+module tb_top_cpu_wonseok;
 
     // =======================================================
     // 1. 신호 선언
