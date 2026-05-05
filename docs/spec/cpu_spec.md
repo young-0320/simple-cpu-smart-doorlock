@@ -717,7 +717,7 @@ ZERO_FLAG:
 ```
 
 ---
-### opcode 1111: A
+### opcode 1111: ADDITION
 
 ```text
 동작:
