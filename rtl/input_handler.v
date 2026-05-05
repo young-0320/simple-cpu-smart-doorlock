@@ -50,31 +50,36 @@ module input_handler (
     wire pulse_master,  level_nc_master;
 
     debouncer u_dbnc_input (
-        .clk       (clk), .reset (reset),
+        .clk       (clk),
+        .reset     (reset),
         .btn_in    (btn_input),
         .btn_level (level_nc_input),
         .btn_pulse (pulse_input)
     );
     debouncer u_dbnc_confirm (
-        .clk       (clk), .reset (reset),
+        .clk       (clk),
+        .reset     (reset),
         .btn_in    (btn_confirm),
         .btn_level (level_nc_confirm),
         .btn_pulse (pulse_confirm)
     );
     debouncer u_dbnc_cancel (
-        .clk       (clk), .reset (reset),
+        .clk       (clk),
+        .reset     (reset),
         .btn_in    (btn_cancel),
         .btn_level (level_nc_cancel),
         .btn_pulse (pulse_cancel)
     );
     debouncer u_dbnc_change (
-        .clk       (clk), .reset (reset),
+        .clk       (clk),
+        .reset     (reset),
         .btn_in    (btn_change),
         .btn_level (level_nc_change),
         .btn_pulse (pulse_change)
     );
     debouncer u_dbnc_master (
-        .clk       (clk), .reset (reset),
+        .clk       (clk),
+        .reset     (reset),
         .btn_in    (btn_master),
         .btn_level (level_nc_master),
         .btn_pulse (pulse_master)
