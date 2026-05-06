@@ -1,24 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2026/04/28 16:24:13
-// Design Name: 
-// Module Name: top_doorlock
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 `include "define.vh"
 
 module top_doorlock (
@@ -44,19 +24,14 @@ module top_doorlock (
     output wire        door_open,
 
     // 온보드 LED LD0~LD3
-    output wire [3:0]  led,
+    output wire [3:0]  led
 
-    // 디버그 출력
-    output wire [11:0] pc_debug,
-    output wire [31:0] acc_debug,
-    output wire        zero_flag_debug,
-    output wire [1:0]  state_debug
 );
 
     // ---------------------------------------------------------
     // 1. Clocking Wizard
     //    Input:  125MHz (clk)
-    //    Output: 7MHz   (clk_cpu)
+    //    Output: 10MHz   (clk_cpu)
     // ---------------------------------------------------------
 
     wire clk_cpu;
@@ -136,11 +111,7 @@ module top_doorlock (
         .bram_wdata      (bram_wdata),
         .bram_we         (bram_we),
         .in_port         (in_port),
-        .out_port        (out_port),
-        .pc_debug        (pc_debug),
-        .acc_debug       (acc_debug),
-        .zero_flag_debug (zero_flag_debug),
-        .state_debug     (state_debug)
+        .out_port        (out_port)
     );
 
     // ---------------------------------------------------------
