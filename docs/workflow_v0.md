@@ -37,7 +37,7 @@
 5. accumulator.v
 6. decoder.v
 7. debouncer.v	      ← 버튼 디바운싱 모듈
-8. fsm.v  
+8. cpu_fsm.v  
 9. inst_reg.v         ← Instruction Register
 10. bram              ← Vivado IP로 생성
 11. input_handler.v   ← PMOD로 입력되는 raw data를 처리하는 모듈
@@ -45,7 +45,7 @@
 13. define.vh         ← 프로젝트 상수 정의 파일 (ISA, 메모리 맵 등)
 14. doorlock.asm      ← 도어락 기능을 어셈블리어로 코딩한 파일
 15. assembler.py      ← doorlock.asm 코드를 기계어(.coe 혹은 .mem)로 변환하는 스크립트
-16. instruction.coe   ← BRAM을 instruction으로 초기화시키는 파일 (assembler.py 출력물)  
+16. doorlock.coe      ← BRAM을 instruction으로 초기화시키는 파일 (assembler.py 출력물)  
 ```
 
 ## 3. 계층 구조
@@ -55,13 +55,13 @@ top_doorlock.v
 ├── top_cpu.v
 │   ├── pc.v
 │   ├── inst_reg.v
-│   ├── fsm.v
+│   ├── cpu_fsm.v
 │   ├── decoder.v
 │   ├── alu.v
-│   ├── debouncer.v
 │   └── accumulator.v
 ├── bram (Vivado IP)
 ├── input_handler.v
+│   └── debouncer.v (×15)
 └── output_handler.v
 ```
 
