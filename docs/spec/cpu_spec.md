@@ -14,7 +14,7 @@
    - JMP, JZ, JNZ 실행 시 지정 주소로 변경
 3. `alu.v`
 
-   - ADD, SUB, CMP, ADDI, CMPI 연산 수행
+   - ADD, SUB, CMP, ADDI, CMPI, SHL, SHR, AND 연산 수행
    - ZERO_FLAG 생성
 4. `accumulator.v`
 
@@ -88,7 +88,8 @@ operand 28비트는 명령어 종류에 따라 다르게 사용된다.
 - 현재 ISA에는 WAIT 명령어 없음
 - 현재 ISA에는 N flag 없음
 - 조건 분기는 ZERO_FLAG만 사용
-- 예약 opcode 1110, 1111은 NOP처럼 처리
+- 예약 opcode 1110은 NOP처럼 처리
+- opcode 1111은 EXT opcode로 funct[27:24]를 추가 디코딩하여 SHL/SHR/AND 수행
 
 ---
 
@@ -127,7 +128,7 @@ operand 28비트는 명령어 종류에 따라 다르게 사용된다.
 | 1100   | OUT      | P    | ACC[3:0] → out_port[3:0]                             |
 | 1101   | IN       | P    | 외부 입력 port 값을 ACC에 저장                        |
 | 1110   | RESERVED | -    | NOP처럼 처리                                          |
-| 1111   | RESERVED | -    | NOP처럼 처리                                          |
+| 1111   | EXT      | E    | funct[27:24]로 SHL/SHR/AND 디코딩                    |
 
 ---
 
@@ -156,7 +157,8 @@ case (opcode)
     4'b1011: // NOP
     4'b1100: // OUT
     4'b1101: // IN
-    default: // RESERVED, NOP처럼 처리
+    4'b1111: // EXT — funct[27:24]로 SHL/SHR/AND 추가 디코딩
+    default: // RESERVED (1110), NOP처럼 처리
 endcase
 ```
 
@@ -290,9 +292,9 @@ bram_addr = operand[11:0]
 ```
 
 8. operand[27:12]는 현재 BRAM 주소로 사용하지 않는다.
-9. ZERO_FLAG는 ADD, SUB, ADDI, CMP, CMPI에서만 업데이트한다.
+9. ZERO_FLAG는 ADD, SUB, ADDI, CMP, CMPI, SHL, SHR, AND에서 업데이트한다.
 10. LOAD, STORE, LOADI, IN, OUT, JMP, JZ, JNZ, NOP은 ZERO_FLAG를 변경하지 않는다.
-11. 예약 opcode 1110, 1111은 NOP처럼 처리한다.
+11. 예약 opcode 1110은 NOP처럼 처리한다. opcode 1111은 EXT opcode (SHL/SHR/AND).
 
 ---
 
@@ -746,58 +748,36 @@ instruction[11:0]  = address (피연산자 메모리 주소 또는 즉시값)
 예시:
 SHL 5
 → funct_bin = 0000, address = 5
-→ 동작: ACC <- ACC << MEM[5] 
+→ 동작: ACC <- ACC << 5  (즉시값, BRAM 접근 없음)
+
+SHR 4
+→ funct_bin = 0001, address = 4
+→ 동작: ACC <- ACC >> 4  (즉시값, BRAM 접근 없음)
 
 AND 12
 → funct_bin = 0010, address = 12
-→ 동작: ACC <- ACC & MEM[12]
+→ 동작: ACC <- ACC & BRAM[12]  (메모리 참조)
 
 ---
-## 9. BRAM 관련 주의사항
+## 9. BRAM 타이밍
 
-BRAM이 동기식 read인지 비동기식 read인지에 따라 CPU FSM 구현이 달라질 수 있다.
+BRAM은 동기식 read이며, 주소를 넣은 다음 클럭 에지에 데이터가 출력된다.
 
-### 9.1 비동기식 read memory인 경우
-
-주소를 넣으면 같은 cycle에 `bram_rdata`가 바로 바뀐다고 가정할 수 있다.
-
-이 경우 CPU FSM을 단순하게 구성할 수 있다.
+CPU FSM은 이를 고려하여 **4-state 고정 구조**로 구현되었다.
 
 ```text
-FETCH
-DECODE
-EXECUTE
-INCREMENT
+FETCH     : bram_addr = PC         → 다음 클럭에 명령어 출력
+DECODE    : IR ← bram_rdata        → 명령어 래치
+EXECUTE   : (LOAD/ALU_MEM) bram_addr = addr  → 다음 클럭에 데이터 출력
+INCREMENT : ACC ← bram_rdata       → 데이터 래치 및 레지스터 갱신
 ```
 
----
-
-### 9.2 동기식 read BRAM인 경우
-
-FPGA BRAM은 보통 주소를 넣은 다음 클럭에 데이터가 나오는 동기식 read 구조일 수 있다.
-
-이 경우 LOAD, ADD, SUB, CMP처럼 BRAM 데이터를 읽어야 하는 명령어는 한 cycle에 끝나기 어렵다.
-
-따라서 다음과 같은 상태가 추가될 수 있다.
-
+LOAD 예시:
 ```text
-FETCH
-DECODE
-EXECUTE
-MEM_WAIT
-WRITE_BACK
-INCREMENT
+1. FETCH     : bram_addr = PC
+2. DECODE    : IR ← 명령어 (LOAD addr)
+3. EXECUTE   : bram_addr = addr
+4. INCREMENT : ACC ← bram_rdata, PC++
 ```
 
-예시:
-
-LOAD addr 실행 시
-
-```text
-1. EXECUTE 상태에서 bram_addr <- addr 설정
-2. MEM_WAIT 상태에서 BRAM 출력 대기
-3. WRITE_BACK 상태에서 ACC <- bram_rdata
-4. INCREMENT 상태에서 PC <- PC + 1
-```
-
-이 부분은 BRAM 담당자와 반드시 맞춰야 한다.
+MEM_WAIT 상태 없이 EXECUTE→INCREMENT 1사이클 간격으로 BRAM 읽기 레이턴시를 흡수한다.
