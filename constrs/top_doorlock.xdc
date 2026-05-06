@@ -18,10 +18,21 @@ set_property -dict { PACKAGE_PIN Y16   IOSTANDARD LVCMOS33 } [get_ports { btn_ca
 
 
 #LEDs
-set_property -dict { PACKAGE_PIN M14   IOSTANDARD LVCMOS33 } [get_ports { led[0] }]; #IO_L23P_T3_35 Sch=led[0]
-set_property -dict { PACKAGE_PIN M15   IOSTANDARD LVCMOS33 } [get_ports { led[1] }]; #IO_L23N_T3_35 Sch=led[1]
-set_property -dict { PACKAGE_PIN G14   IOSTANDARD LVCMOS33 } [get_ports { led[2] }]; #IO_0_35 Sch=led[2]
-set_property -dict { PACKAGE_PIN D18   IOSTANDARD LVCMOS33 } [get_ports { led[3] }]; #IO_L3N_T0_DQS_AD1N_35 Sch=led[3]
+#set_property -dict { PACKAGE_PIN M14   IOSTANDARD LVCMOS33 } [get_ports { led[0] }]; #IO_L23P_T3_35 Sch=led[0]
+#set_property -dict { PACKAGE_PIN M15   IOSTANDARD LVCMOS33 } [get_ports { led[1] }]; #IO_L23N_T3_35 Sch=led[1]
+#set_property -dict { PACKAGE_PIN G14   IOSTANDARD LVCMOS33 } [get_ports { led[2] }]; #IO_0_35 Sch=led[2]
+#set_property -dict { PACKAGE_PIN D18   IOSTANDARD LVCMOS33 } [get_ports { led[3] }]; #IO_L3N_T0_DQS_AD1N_35 Sch=led[3]
+
+
+##RGB LED 5 (Zybo Z7-20 only)
+set_property -dict { PACKAGE_PIN Y11   IOSTANDARD LVCMOS33 } [get_ports { led[1] }]; #IO_L18N_T2_13 Sch=led5_r
+#set_property -dict { PACKAGE_PIN T5    IOSTANDARD LVCMOS33 } [get_ports { led5_g }]; #IO_L19P_T3_13 Sch=led5_g
+set_property -dict { PACKAGE_PIN Y12   IOSTANDARD LVCMOS33 } [get_ports { led[3] }]; #IO_L20P_T3_13 Sch=led5_b
+
+##RGB LED 6
+set_property -dict { PACKAGE_PIN V16   IOSTANDARD LVCMOS33 } [get_ports { led[2] }]; #IO_L18P_T2_34 Sch=led6_r
+#set_property -dict { PACKAGE_PIN F17   IOSTANDARD LVCMOS33 } [get_ports { led6_g }]; #IO_L6N_T0_VREF_35 Sch=led6_g
+#set_property -dict { PACKAGE_PIN M17   IOSTANDARD LVCMOS33 } [get_ports { led6_b }]; #IO_L8P_T1_AD10P_35 Sch=led6_b
 
                                                                                                                                  
 ##Pmod Header JD                                                                                                                  
@@ -31,7 +42,7 @@ set_property -dict { PACKAGE_PIN T15   IOSTANDARD LVCMOS33     } [get_ports { pm
 #set_property -dict { PACKAGE_PIN R14   IOSTANDARD LVCMOS33     } [get_ports { btn_master }]; #IO_L6N_T0_VREF_34 Sch=jd_n[2]             
 #set_property -dict { PACKAGE_PIN U14   IOSTANDARD LVCMOS33     } [get_ports { btn_cancel }]; #IO_L11P_T1_SRCC_34 Sch=jd_p[3]            
 #set_property -dict { PACKAGE_PIN U15   IOSTANDARD LVCMOS33     } [get_ports { btn_change }]; #IO_L11N_T1_SRCC_34 Sch=jd_n[3]            
-#set_property -dict { PACKAGE_PIN V17   IOSTANDARD LVCMOS33     } [get_ports { led[3] }]; #IO_L21P_T3_DQS_34 Sch=jd_p[4]             
+set_property -dict { PACKAGE_PIN V17   IOSTANDARD LVCMOS33     } [get_ports { led[0] }]; #IO_L21P_T3_DQS_34 Sch=jd_p[4]             
 set_property -dict { PACKAGE_PIN V18   IOSTANDARD LVCMOS33     } [get_ports { door_open }]; #IO_L21N_T3_DQS_34 Sch=jd_n[4]             
                                                                                                                                  
                                                                                                                                  
