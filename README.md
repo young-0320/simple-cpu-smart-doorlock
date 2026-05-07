@@ -333,7 +333,7 @@ python assembler.py doorlock.asm doorlock.coe
 
 ## Demo Results
 
-시연 영상 링크:
+시연 영상 링크: https://youtu.be/udAdsoxqp08
 
 시연은 Zybo Z7-20 보드에서 진행하였으며 아래 기능을 모두 확인했다.
 
