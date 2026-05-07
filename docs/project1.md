@@ -2,9 +2,9 @@
 
 ## simple cpu smart doorlock
 
-📅 **마감 기한 5월 1일 10:30**
+📅 **마감 기한 5월 8일 10:30**
 
-5월 1일 시연 영상과 발표 자료 업로드
+5월 8일 시연 영상과 발표 자료 업로드
 5월 15일 발표 (질의응답 준비)
 
 GitHub Repository URL: https://github.com/KHU-digital-design/simple-cpu-smart-doorlock
@@ -20,24 +20,4 @@ GitHub Repository URL: https://github.com/KHU-digital-design/simple-cpu-smart-do
 하나의 BRAM을 main memory (data 및 instruction) 로 활용해야 함.
 instruction을 BRAM에 다 넣은 상태에서 초기화를 한번 한 상태를 가정.  발표 때 직접 동작을 보여주어야 함.
 발표시간은 30분 (시연 포함, 특징, 구조, instruction 어떻게 만들었는지 설명)
-5월 1일 영상과 발표자료 올리고 5월 15일 발표 (질의응답 준비).
-
----
-
-
-## 역할분담
-
-한영웅, 허원석 : CPU 설계
-
-유경민 : BRAM ip + 어셈블리
-    - BRAM 단일 포트 설계
-    - 메모리 맵 정의
-    - 어셈블리 프로그램 작성
-    - 기계어 변환 스크립트 (Python)
-    - .coe(혹은 .mem) 파일 생성
-
-이윤서 : 입출력 + Top-level
-
-    - 입력 처리 (PMOD / one hot -> 2진수 인코딩)
-    - LED / 잠금 출력
-    - top 모듈 통합 및 테스트벤치 작성 후 검증
+5월 1일 영상과 발표자료 올리고 5월 15일 발표 (질의응답 준비)
